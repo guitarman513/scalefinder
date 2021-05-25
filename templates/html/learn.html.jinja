@@ -1,0 +1,89 @@
+{% extends "base_html/noScalesBase.html"%}
+{% block page %}
+
+<article>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <p>This website provides handy tools for learning your instrument, decoding songs and TABs more accurately, and understanding why certain chords sound good together. Each instrument's page on this website shows the following:</p>
+          <ul>
+          <li>A chord chart showing all notes in the currently selected scale, along with triads and seventh chords native to that scale.</li>
+          <li>A fretboard diagram highlighting the notes in the currently selected scale, with the root note shaded slightly darker. Tuning can be done by: (1) clicking on the open fret of the string you wish to change. The open fret will highlight red, and clicking will detune by one half-step at a time. (2) selecting one of the presets under "quick tune"</li>
+          <li>Selection buttons for changing the key. </li>
+          <li>Selection button for changing the scale. </li>
+          </ul>
+          <p>The chord chart displays abbreviations for the names of the triads and seventh chords. An index of these abbreviations is below: </p>
+          
+<table class="tableizer-table">
+<thead><tr class="tableizer-firstrow"><th>Abbreviation</th><th>Full Name</th></tr></thead><tbody>
+ <tr><td>maj</td><td>major</td></tr>
+ <tr><td>m</td><td>minor</td></tr>
+ <tr><td>dim</td><td>diminished</td></tr>
+ <tr><td>aug</td><td>augmented</td></tr>
+ <tr><td>M7</td><td>major 7</td></tr>
+ <tr><td>m7</td><td>minor 7</td></tr>
+ <tr><td>mM7</td><td>minor major 7</td></tr>
+ <tr><td>7</td><td>dominant 7</td></tr>
+ <tr><td>m7b5</td><td>minor 7 flat 5</td></tr>
+ <tr><td>dim7</td><td>diminished 7</td></tr>
+ <tr><td>augM7</td><td>augmented major 7</td></tr>
+ <tr><td>Aug7</td><td>augmented dominant 7</td></tr>
+ <tr><td>dom7b5</td><td>dominant 7 flat 5</td></tr>
+</tbody></table>
+
+          <p>A quick introduction to terms used in the site, in case you're unfamiliar: </p>
+        <ul>
+          <li>Modes:
+            <ul>
+              <li>
+                Take a C Major Scale. The notes are C, D, E, F, G, A, B, C. The notes in the scale have a particular spacing that gives the arrangement a "major"" feeling. The spacing in semitones is 2, 2, 1, 2, 2, 2, 1.
+              </li>
+              <li>
+                What happens if we instead start on D? The notes in this scale would be D, E, F, G, A, B, C, D. The spacing in semitones is now 2, 1, 2, 2, 2, 1, 2. This spacing that gives the arrangement a feeling different from "major". It just so happens we define this spacing as "Dorian".  
+              </li>
+              <li>
+                So, the Dorian Mode refers to a spacing of 2, 1, 2, 2, 2, 1, 2 between notes. It is the second mode of the major scale, since it is as if we played a major scale starting on the second note. We can derive 7 different modes from the major scale by starting on a different note, and all will have a unique semitone spacing that gives them a unique "feel".
+              </li>
+              <li>
+                In fact, the sixth mode of the major scale is the "natural minor" scale, and you are probably familiar with it. 
+              </li>
+            </ul>
+          </li>
+          <li>Triads:
+            <ul>
+              <li>
+                Triads and scales are related very closely. Triads are 3-note chords formed by notes in a parent scale.
+              </li>
+              <li>
+                To form a triad, start on one note in a scale. This is the root of your triad. Then skip a note in the scale, and add the next note of the scale to the triad. Then skip another note in the scale, and add the next note of the scale to the triad.
+              </li>
+              <li>
+                For example, if we were in C major, [C, D, E, F, G, A, B, C] , and we started on C (the first note in the scale), our first "degree" triad would be C E G (skipping D and F). The semitone spacing between C-to-E and C-to-G (4 and 7 semitones, respectively) is such that we perceive it as "happy" or "major".
+              </li>
+              <li>
+                If we started on D (the second note in the scale), our second "degree" triad would be D F A (skipping E and G). The semitone spacing between D-to-F and D-to-A (3 and 7 semitones, respectively) is such that we perceive it as "sad" or "minor".
+              </li>
+              <li>
+                Just like with modes, there are seven possible starting or root notes in the major scale, so we have seven possible triads. If a song is in the key of C major, some of these seven triads are 100% in there somewhere.
+              </li>
+              <li>
+                To form a seventh chord, just add another note to the triad! We define C,E,G,B as a "major seventh" chord, because we use the same formula is before (taking every-other note in the scale). The B is the "major seventh" of C since it is 11 semitones away. Often times the fourth note in the seventh chord is flattened, in which case we call it a "dominant seventh".  
+              </li>
+              <li>
+                There are many other triads and seventh chords naturally found in scales, as seen <a href="https://en.wikipedia.org/wiki/List_of_chords">here<a>. 
+              </li>
+              <li>
+                Use the table on each page to explore triad spacing for yourself!
+              </li>
+            </ul>
+          </li>
+        </ul>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <hr>
+
+
+{% endblock %}

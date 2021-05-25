@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ADS -->
+
+    <script data-ad-client="ca-pub-5609758517230247" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <!-- ADS -->
+
+    <!--General stuff for each page (maybe later have title get fed in a variable from each page)-->
+    <title>Scale Helper</title>
+    <meta charset="utf-8">
+    <!----------current screen-----------device width--------100% scale (no zoom) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <!--include all css fonts img and js-->
+    {% include 'base_html/imports.html' %}
+
+    {% include 'base_html/stringedjq.html' %}
+
+</head>
+
+<body>
+
+    <!--Include navbar-->
+    {% include 'base_html/navbar.html' %}
+
+    <div class="jumbotron">
+
+        {% include 'base_html/triadTable.html' %}
+
+        <!--include the meat of each page here-->
+        {% block page %}
+        {% endblock %}
+
+        {% include 'base_html/keyScaleButtons.html' %}
+
+    </div>
+    <!--Include Footer-->
+    {% include 'base_html/footer.html' %}
+
+
+</body>
+</html>

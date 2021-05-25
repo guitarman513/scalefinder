@@ -1,0 +1,390 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- <script type="text/javascript">
+  //functions not called when page loads
+  function decreaseString1(){
+    alert("string 1 clicked");
+    decreaseString(1);
+  }
+</script> -->
+<script>
+$(document).ready(function(){
+  //need to pass the colorizer the amount of notes in the scale also!
+  var NOTES_ARRAY = ['A','A#/Bb','B','C','C#/Db','D','D#/Eb','E','F','F#/Gb','G','G#/Ab'];
+  var NOTES_TO_OFFSET_DICT = {'A': 0, 'A#/Bb': 1, 'B': 2, 'C': 3, 'C#/Db': 4, 'D': 5, 'D#/Eb': 6, 'E': 7, 'F': 8, 'F#/Gb': 9, 'G': 10, 'G#/Ab': 11};
+  var OFFSET_TO_NOTES_DICT = {0:'A', 1:'A#/Bb', 2:'B', 3:'C', 4:'C#/Db', 5:'D', 6:'D#/Eb', 7:'E', 8:'F', 9:'F#/Gb', 10:'G', 11:'G#/Ab'};
+  var SCALE_SEMI_DICT = {'IONIAN': [0,2,4,5,7,9,11],
+                         'DORIAN': [0,2,3,5,7,9,10],
+                         'PHRYGIAN': [0,1,3,5,7,8,10],
+                         'LYDIAN': [0,2,4,6,7,9,11],
+                         'MIXOLYDIAN': [0,2,4,5,7,9,10],
+                         'AEOLIAN': [0,2,3,5,7,8,10],
+                         'LOCRIAN': [0,1,3,5,6,8,10],
+                         'HARMONIC MINOR': [0,2,3,5,7,8,11],'LOCRIAN 6': [0,1,3,5,6,9,10],'IONIAN #5': [0,2,4,5,8,9,11],'DORIAN #4': [0,2,3,6,7,9,10],'PHRYGIAN DOMINANT': [0,1,4,5,7,8,10],'LYDIAN #2': [0,3,4,6,7,9,11],'SUPER LOCRIAN bb7': [0,1,3,4,6,8,9],
+                         'MELODIC MINOR': [0,2,3,5,7,9,11],'DORIAN b2': [0,1,3,5,7,9,10],'LYDIAN #5': [0,2,4,6,8,9,11],'LYDIAN DOMINANT': [0,2,4,6,8,9,10],'MIXOLYDIAN b6': [0,2,4,5,7,8,10],'AEOLIAN b5': [0,2,3,5,6,8,10],'SUPER LOCRIAN b7': [0,1,3,4,6,8,10],
+                         'MAJOR PENTATONIC': [0,2,4,7,9],
+                         'MINOR PENTATONIC': [0,3,5,7,10]};
+  var DEGREEDICT = {0:'Root',1:'b2nd',2:'2nd',3:'b3rd',4:'3rd',5:'4th',6:'b5th',7:'5th',8:'b6th',9:'6th',10:'b7th',11:'7th'};
+  var CHORDDICT = {'47':'maj ',
+    '37':'m',
+    '36':'dim',
+    '48':'aug',
+    '4711':'M7',
+    '3710':'m7',
+    '3711':'mM7',
+    '4710':'7',
+    '3610':'m7b5',
+    '369':'dim7',
+    '4811':'augM7',
+    '4810':'aug7',
+    '4610':'dom7b5',
+    '269':'dim7bb3',
+    '379':'m6',
+    '35':'m4',
+    '27':'second',
+    '58':'AugSus4'};
+
+  //if banjo
+  if ($("#instrumentHeader").text()=="Banjo"){
+    //hide the first 5 frets of the banjo's lowest string (string5)
+    for (var i = 0; i < 5; i++) {
+        var cellnum = i+1;
+        $("#STRING5 td:nth-child("+ cellnum +")").css("visibility","hidden");//hides but doesn't remove the space it took up
+        $("#dotsB5 td:nth-child("+ cellnum +")").css("visibility","hidden");
+    }
+    changeTuning(['D','B','G','D','G']);//listed from top to bottom so might look weird
+  }
+  if ($("#instrumentHeader").text()=="12-Stringed Guitar"){changeTuning(['E','E','B','B','G','G','D','D','A','A','E','E']);}
+  if ($("#instrumentHeader").text()=="11-Stringed Guitar"){changeTuning(['G','D','A#/Bb','F','C','G','F','D#/Eb','D','C','A#/Bb']);}
+  if ($("#instrumentHeader").text()=="10-Stringed Guitar"){changeTuning(['E','B','G','D','A','E','B','F#/Gb','C#/Db','G#/Ab']);}
+  if ($("#instrumentHeader").text()=="9-Stringed Guitar"){changeTuning(['E','B','G','D','A','E','B','F#/Gb','C#/Db']);}
+  if ($("#instrumentHeader").text()=="8-Stringed Guitar"){changeTuning(['E','B','G','D','A','E','B','F#/Gb','','','','']);}
+  if ($("#instrumentHeader").text()=="7-Stringed Guitar"){changeTuning(['E','B','G','D','A','E','B','','','','','']);}
+  
+
+  //tunings for guitar
+  $("#STANDARD_btn_6").click(function(){changeTuning(['E','B','G','D','A','E']);});
+  $("#DROP_D_btn_6").click(function(){changeTuning(['E','B','G','D','A','D']);});
+  $("#OPEN_D_btn_6").click(function(){changeTuning(['D','A','F#/Gb','D','A','D']);});
+  $("#DROP_C_btn_6").click(function(){changeTuning(['D','A','F','C','G','C']);});
+  $("#OPEN_G_btn_6").click(function(){changeTuning(['D','B','G','D','G','D']);});
+  $("#OPEN_C_btn_6").click(function(){changeTuning(['E','C','G','C','G','C']);});
+  $("#OPEN_E_btn_6").click(function(){changeTuning(['E','B','G#/Ab','E','B','E']);});
+  //tunings for 4 stringed instruments
+  $("#STANDARD_BASS_btn_4").click(function(){changeTuning(['G','D','A','E','','']);});
+  $("#DROP_D_btn_4").click(function(){changeTuning(['G','D','A','D','','']);});
+  $("#DOWN_FOURTH_btn_4").click(function(){changeTuning(['D','A','E','B','','']);});
+  $("#D_STANDARD_btn_4").click(function(){changeTuning(['F','C','G','D','','']);});
+  $("#DROP_C_btn_4").click(function(){changeTuning(['F','C','G','C','','']);});
+  $("#CGCG_btn_4").click(function(){changeTuning(['G','C','G','C','','']);});
+  $("#UKULELE_btn_4").click(function(){changeTuning(['A','E','C','G','','']);});
+  $("#CHICAGO_btn_4").click(function(){changeTuning(['E','B','G','D','','']);});
+  $("#CGBD_btn_4").click(function(){changeTuning(['D','B','G','C','','']);});
+  //banjo
+  $("#OPEN_G_btn_5").click(function(){changeTuning(['D','B','G','D','G','']);});
+$("#HIGH_A_btn_5").click(function(){changeTuning(['D','B','G','D','A','']);});
+$("#DOUBLE_C_btn_5").click(function(){changeTuning(['D','C','G','C','G','']);});
+$("#DROP_C_btn_5").click(function(){changeTuning(['D','B','G','C','G','']);});
+$("#D_btn_5").click(function(){changeTuning(['D','A','F#/Gb','D','A','']);});
+$("#SAWMILL_btn_5").click(function(){changeTuning(['D','C','G','D','G','']);});
+//5 string bass
+$("#STANDARD_BASS_btn_5").click(function(){changeTuning(['G','D','A','E','B','']);});
+$("#HIGH_C_btn_5").click(function(){changeTuning(['C','G','D','A','E','']);});
+$("#HIGH_B_btn_5").click(function(){changeTuning(['B','G','D','A','E','']);});
+$("#DROP_D_btn_5").click(function(){changeTuning(['G','D','A','E','D','']);});
+$("#DROP_C_btn_5").click(function(){changeTuning(['G','D','A','E','C','']);});
+//12 string 
+$("#STANDARD_btn_12").click(function(){changeTuning(['E','E','B','B','G','G','D','D','A','A','E','E']);});
+//11
+$("#ALTO_btn_11").click(function(){changeTuning(['G','D','A#/Bb','F','C','G','F','D#/Eb','D','C','A#/Bb','']);});
+//10
+$("#STANDARD_btn_10").click(function(){changeTuning(['E','B','G','D','A','E','B','F#/Gb','C#/Db','G#/Ab','','']);});
+//9
+$("#STANDARD_btn_9").click(function(){changeTuning(['E','B','G','D','A','E','B','F#/Gb','C#/Db','','','']);});
+//8
+$("#STANDARD_btn_8").click(function(){changeTuning(['E','B','G','D','A','E','B','F#/Gb','','','','']);});
+//7
+$("#STANDARD_btn_7").click(function(){changeTuning(['E','B','G','D','A','E','B','','','','','']);});
+$("#DROP_A_btn_7").click(function(){changeTuning(['E','B','G','D','A','E','A','','','','','']);});
+$("#DROP_G_btn_7").click(function(){changeTuning(['D','A','F','C','G','D','G','','','','','']);});
+$("#OPEN_C_btn_").click(function(){changeTuning(['E','C','G','C','G','C','G','','','','','']);});
+
+  //top string always string 1
+  function changeTuning(noteArr){
+      for (var i=0; i<noteArr.length;i++){
+          var currentString = i+1;
+          var desiredOpenStringNote = noteArr[i];
+          while ($("#S"+currentString+"_open").text()!=desiredOpenStringNote){
+            decreaseString(currentString);
+          }
+          //alert("string "+currentString+" finished");
+      }
+  }
+
+  $("#S1_open").click(function(){decreaseString(1);});
+  $("#S2_open").click(function(){decreaseString(2);});
+  $("#S3_open").click(function(){decreaseString(3);});
+  $("#S4_open").click(function(){decreaseString(4);});
+  $("#S5_open").click(function(){decreaseString(5);});
+  $("#S6_open").click(function(){decreaseString(6);});
+  $("#S7_open").click(function(){decreaseString(7);});
+  $("#S8_open").click(function(){decreaseString(8);});
+  $("#S9_open").click(function(){decreaseString(9);});
+  $("#S10_open").click(function(){decreaseString(10);});
+  $("#S11_open").click(function(){decreaseString(11);});
+  $("#S12_open").click(function(){decreaseString(12);});
+
+  $("#S1_open").mouseover(function(){$(this).css('background-color',"Red");}).mouseout(function(){getNewNotes();});
+  $("#S2_open").mouseover(function(){$(this).css('background-color',"Red");}).mouseout(function(){getNewNotes();});
+  $("#S3_open").mouseover(function(){$(this).css('background-color',"Red");}).mouseout(function(){getNewNotes();});
+  $("#S4_open").mouseover(function(){$(this).css('background-color',"Red");}).mouseout(function(){getNewNotes();});
+  $("#S5_open").mouseover(function(){$(this).css('background-color',"Red");}).mouseout(function(){getNewNotes();});
+  $("#S6_open").mouseover(function(){$(this).css('background-color',"Red");}).mouseout(function(){getNewNotes();});
+  $("#S7_open").mouseover(function(){$(this).css('background-color',"Red");}).mouseout(function(){getNewNotes();});
+  $("#S8_open").mouseover(function(){$(this).css('background-color',"Red");}).mouseout(function(){getNewNotes();});
+  $("#S9_open").mouseover(function(){$(this).css('background-color',"Red");}).mouseout(function(){getNewNotes();});
+  $("#S10_open").mouseover(function(){$(this).css('background-color',"Red");}).mouseout(function(){getNewNotes();});
+  $("#S11_open").mouseover(function(){$(this).css('background-color',"Red");}).mouseout(function(){getNewNotes();});
+  $("#S12_open").mouseover(function(){$(this).css('background-color',"Red");}).mouseout(function(){getNewNotes();});
+
+
+  $("#A_btn").click(function(){changeKey('A');});
+  $("#AsBf_btn").click(function(){changeKey('A#/Bb');});
+  $("#B_btn").click(function(){changeKey('B');});
+  $("#C_btn").click(function(){changeKey('C');});
+  $("#CsDf_btn").click(function(){changeKey('C#/Db');});
+  $("#D_btn").click(function(){changeKey('D');});
+  $("#DsEf_btn").click(function(){changeKey('D#/Eb');});
+  $("#E_btn").click(function(){changeKey('E');});
+  $("#F_btn").click(function(){changeKey('F');});
+  $("#FsGf_btn").click(function(){changeKey('F#/Gb');});
+  $("#G_btn").click(function(){changeKey('G');});
+  $("#GsAf_btn").click(function(){changeKey('G#/Ab');});
+
+  $("#Ionian_btn").click(function(){changeScale('IONIAN');});
+  $("#Dorian_btn").click(function(){changeScale('DORIAN');});
+  $("#Phrygian_btn").click(function(){changeScale('PHRYGIAN');});
+  $("#Lydian_btn").click(function(){changeScale('LYDIAN');});
+  $("#Mixolydian_btn").click(function(){changeScale('MIXOLYDIAN');});
+  $("#Aeolian_btn").click(function(){changeScale('AEOLIAN');});
+  $("#Locrian_btn").click(function(){changeScale('LOCRIAN');});
+  $("#MajPent_btn").click(function(){changeScale('MAJOR PENTATONIC');});
+  $("#MinPent_btn").click(function(){changeScale('MINOR PENTATONIC');});
+  $("#MelodicMin_btn").click(function(){changeScale('MELODIC MINOR');}); $("#MelodicMin2_btn").click(function(){changeScale('DORIAN b2');});  $("#MelodicMin3_btn").click(function(){changeScale('LYDIAN #5');});  $("#MelodicMin4_btn").click(function(){changeScale('LYDIAN DOMINANT');});  $("#MelodicMin5_btn").click(function(){changeScale('MIXOLYDIAN b6');});  $("#MelodicMin6_btn").click(function(){changeScale('AEOLIAN b5');});  $("#MelodicMin7_btn").click(function(){changeScale('SUPER LOCRIAN b7');});
+  $("#HarminocMin_btn").click(function(){changeScale('HARMONIC MINOR');});$("#HarminocMin2_btn").click(function(){changeScale('LOCRIAN 6');});$("#HarminocMin3_btn").click(function(){changeScale('IONIAN #5');});$("#HarminocMin4_btn").click(function(){changeScale('DORIAN #4');});$("#HarminocMin5_btn").click(function(){changeScale('PHRYGIAN DOMINANT');});$("#HarminocMin6_btn").click(function(){changeScale('LYDIAN #2');});$("#HarminocMin7_btn").click(function(){changeScale('SUPER LOCRIAN bb7');});
+
+
+
+  function changeKey(key){
+    //alert(key);
+    $("#CURRENT_KEY").text(key);$("#CURRENT_KEY1").text(key);$("#CURRENT_KEY2").text(key);
+    getNewNotes()
+  }
+  function changeScale(scale){
+    //alert(key);
+    $("#CURRENT_SCALE").text(scale);$("#CURRENT_SCALE1").text(scale);$("#CURRENT_SCALE2").text(scale);
+    getNewNotes()
+  }
+  function getTriad(ROOT,CURRENTSEMI,SCALE_SEMIS,DOSEVENTH){
+    var scaleLength = SCALE_SEMIS.length;
+    var ROOTOFFSETFROMMASTERNOTELIST = NOTES_TO_OFFSET_DICT[ROOT];
+    var ROOTINDEXINSCALE = SCALE_SEMIS.indexOf(CURRENTSEMI);//index in scale semi array
+    var ROOTPOSINSCALE = CURRENTSEMI;//actual number of semis away the root of the triad is away from the root of the overall scale
+
+    var THIRDPOSINSCALE = SCALE_SEMIS[ (ROOTINDEXINSCALE+2)%(scaleLength) ];
+    var FIFTHPOSINSCALE = SCALE_SEMIS[ (ROOTINDEXINSCALE+4)%(scaleLength) ];
+    var SEVENTHPOSINSCALE = SCALE_SEMIS[ (ROOTINDEXINSCALE+6)%(scaleLength) ];
+    //alert("SCALE_SEMIS: "+SCALE_SEMIS+"\ntriad root"+ROOT+"\nTriadROOTSemisINSCALE:" + ROOTPOSINSCALE+"\nrootIDXinSemiList:"+ROOTINDEXINSCALE+"\nTHIRDPOSINSCALE:"+THIRDPOSINSCALE);
+
+    var DistThirdRoot = (THIRDPOSINSCALE+12-ROOTPOSINSCALE)%12;
+    var DistFifthThird = (FIFTHPOSINSCALE+12-THIRDPOSINSCALE)%12;
+    var DistSeventhFifth = (SEVENTHPOSINSCALE+12-FIFTHPOSINSCALE)%12;
+
+    var ThirdNote = OFFSET_TO_NOTES_DICT[(ROOTOFFSETFROMMASTERNOTELIST+DistThirdRoot)%12];
+    var FifthNote = OFFSET_TO_NOTES_DICT[(ROOTOFFSETFROMMASTERNOTELIST+DistThirdRoot+DistFifthThird)%12];
+    var SeventhNote = OFFSET_TO_NOTES_DICT[(ROOTOFFSETFROMMASTERNOTELIST+DistThirdRoot+DistFifthThird+DistSeventhFifth)%12];
+
+    //alert("root is "+ROOT+"\nDistThirdRoot is "+DistThirdRoot+"\nSROOTOFFSETFROMMASTERNOTELIST: "+ROOTOFFSETFROMMASTERNOTELIST+"\n3rdOFFSETINLISTIS: "+(ROOTOFFSETFROMMASTERNOTELIST+DistThirdRoot)%12 +"\nThirdNoteis"+ThirdNote);
+    var triadNotesString = DistThirdRoot.toString()+(DistFifthThird+DistThirdRoot).toString();
+    var sevenNotesString = triadNotesString+(DistFifthThird+DistThirdRoot+DistSeventhFifth).toString();
+
+    if (DOSEVENTH == 1) {
+        return {"Semis": sevenNotesString, "Notes":[ROOT,ThirdNote,FifthNote,SeventhNote] };
+    }
+    else {
+        return {"Semis": triadNotesString, "Notes":[ROOT,ThirdNote,FifthNote] };
+    }
+
+  }
+
+  function getNewNotes(){
+    //alert('recoloring');
+    var NEW_KEY = $("#CURRENT_KEY").text();
+    var NEW_SCALE = $("#CURRENT_SCALE").text();
+    var NEW_OFFSET = NOTES_TO_OFFSET_DICT[NEW_KEY];
+    var SCALE_SEMIS = SCALE_SEMI_DICT[NEW_SCALE];
+    removeShading();
+    //alert(SCALE_SEMIS);
+    //alert(SCALE_SEMIS.length);
+    colorNeck(NEW_KEY,'ForestGreen');//color root
+    //alert("new note shaded");
+    for (var i = 1; i < SCALE_SEMIS.length; i++) {//color all non-root notes
+      //alert("new offset: " + NEW_OFFSET);
+      //alert("i and scale semis [i]: " + i + " " + SCALE_SEMIS[i]);
+      var nextScaleNote = OFFSET_TO_NOTES_DICT[(NEW_OFFSET+SCALE_SEMIS[i])%12];
+      //alert(nextScaleNote);
+      colorNeck(nextScaleNote,'DarkSeaGreen');
+    }
+    //edit top table
+    for (var i = 0; i < SCALE_SEMIS.length; i++) {
+      var tablecellnum = i+2;
+      //make sure all previously hidden cells are now shown
+      $("#NOTE_ROW td:nth-child("+ tablecellnum +")").show();
+      $("#DEGREE_ROW td:nth-child("+ tablecellnum +")").show();//.text("");//first cell in row is index 1
+      $("#SEMITONE_ROW td:nth-child("+ tablecellnum +")").show();//.text("");//first cell in row is index 1
+      $("#TRIAD_ROW td:nth-child("+ tablecellnum +")").show();//.text("");//first cell in row is index 1
+      $("#TRIAD_NOTES_ROW td:nth-child("+ tablecellnum +")").show();//.text("");
+      $("#SEVENTH_ROW td:nth-child("+ tablecellnum +")").show();//.text("");//first cell in row is index 1
+      $("#SEVENTH_NOTES_ROW td:nth-child("+ tablecellnum +")").show();//.text("");
+      var CURRENTNOTE = OFFSET_TO_NOTES_DICT[(NEW_OFFSET+SCALE_SEMIS[i])%12];
+      var CURRENTSEMI = SCALE_SEMIS[i];
+      var CURRENTDEGREE = DEGREEDICT[CURRENTSEMI];
+      
+      //top row
+      $("#NOTE_ROW td:nth-child("+ tablecellnum +")").text(CURRENTNOTE);//first cell in row is index 1
+      //alert("current note is "+CURRENTNOTE+" I is "+i);
+      $("#DEGREE_ROW td:nth-child("+ tablecellnum +")").text(CURRENTDEGREE);//first cell in row is index 1
+      $("#SEMITONE_ROW td:nth-child("+ tablecellnum +")").text(CURRENTSEMI);//first cell in row is index 1
+      var triadSemisAndNotes = getTriad(CURRENTNOTE,CURRENTSEMI,SCALE_SEMIS,0);
+      var seventhSemisAndNotes = getTriad(CURRENTNOTE,CURRENTSEMI,SCALE_SEMIS,1);
+      var triadName = CHORDDICT[triadSemisAndNotes['Semis']]; var chordNameBAD = 0;
+      if (typeof triadName == 'undefined') {
+        chordNameBAD = 1;
+        $("#TRIAD_ROW").hide();
+        $("#TRIAD_NOTES_ROW").hide();
+        $("#SEVENTH_ROW").hide();
+        $("#SEVENTH_NOTES_ROW").hide();
+        break;
+      }
+      else {
+        $("#TRIAD_ROW").show();
+        $("#TRIAD_NOTES_ROW").show();
+        $("#SEVENTH_ROW").show();
+        $("#SEVENTH_NOTES_ROW").show();
+      }
+      $("#TRIAD_ROW td:nth-child("+ tablecellnum +")").text(triadSemisAndNotes["Notes"][0] + " " + CHORDDICT[triadSemisAndNotes['Semis']]);
+      $("#TRIAD_NOTES_ROW td:nth-child("+ tablecellnum +")").text(triadSemisAndNotes["Notes"][0]+"  "+triadSemisAndNotes["Notes"][1]+"  "+triadSemisAndNotes["Notes"][2]);
+      $("#SEVENTH_ROW td:nth-child("+ tablecellnum +")").text(triadSemisAndNotes["Notes"][0] + " " + CHORDDICT[seventhSemisAndNotes['Semis']]);
+      $("#SEVENTH_NOTES_ROW td:nth-child("+ tablecellnum +")").text(seventhSemisAndNotes["Notes"][0]+"  "+seventhSemisAndNotes["Notes"][1]+"  "+seventhSemisAndNotes["Notes"][2]+"  "+seventhSemisAndNotes["Notes"][3]);
+  }
+    //hide unused columns
+    for (var i = SCALE_SEMIS.length; i < 9; i++) {
+      //alert('in loop');
+      var cellnum = i+2;
+      $("#NOTE_ROW td:nth-child("+ cellnum +")").hide();//text("");//first cell in row is index 1
+      //alert("current note is "+CURRENTNOTE+" I is "+i);
+      $("#DEGREE_ROW td:nth-child("+ cellnum +")").hide();//.text("");//first cell in row is index 1
+      $("#SEMITONE_ROW td:nth-child("+ cellnum +")").hide();//.text("");//first cell in row is index 1
+      $("#TRIAD_ROW td:nth-child("+ cellnum +")").hide();//.text("");//first cell in row is index 1
+      $("#TRIAD_NOTES_ROW td:nth-child("+ cellnum +")").hide();//.text("");
+      $("#SEVENTH_ROW td:nth-child("+ cellnum +")").hide();//.text("");//first cell in row is index 1
+      $("#SEVENTH_NOTES_ROW td:nth-child("+ cellnum +")").hide();//.text("");
+    }
+
+  }
+
+  function colorNeck(note,shade){
+    $(".tableizer-table tr").each(function(){
+      //alert(testarray[0]);
+      $(this).find('td').each (function() {
+        //alert($(this).text().toUpperCase());
+        if ($(this).text().toUpperCase() == note.toUpperCase() ) {
+          //alert("match found");
+          $(this).css('background-color',shade);
+        }
+      });
+    });
+  }
+
+  function removeShading(){
+    $(".tableizer-table tr").each(function(){
+      //alert(testarray[0]);
+      $(this).find('td').each (function() {
+        //alert($(this).text().toUpperCase());
+        $(this).css('background-color','#FFFFFF');
+      });
+    });
+    $(".tableizer-table tr.dots").each(function(){
+      //alert("found dots row");
+      $(this).find('td').each (function() {
+        $(this).css('background-color','black');
+      })
+    });
+  }
+
+
+
+  function decreaseString(STRING){
+    $("#STRING"+STRING).find('td').each(function(){
+      //alert("found string" + STRING);
+      var currentNote = $(this).text();
+      var currentOffset = NOTES_TO_OFFSET_DICT[currentNote];
+      var newOffset = (currentOffset+12-1)%12;
+      $(this).text(OFFSET_TO_NOTES_DICT[newOffset]);
+    });
+    getNewNotes();
+  }
+
+  $(function() {
+    getNewNotes();
+  });
+
+
+});
+
+</script>
+
+<style type="text/css">
+
+	table.tableizer-table {
+		font-size: 18px;
+    border: 5px solid black;
+    border-collapse: collapse;
+		font-family: Arial, Helvetica, sans-serif;
+    /*width: 100%;*/
+    /*table-layout:fixed;*/
+	}
+
+	table.tableizer-table td, th {
+    border: 2px solid black;
+    text-align: center;
+    padding: 8px;
+	}
+  .dots td {
+    padding: 0px;
+    text-align: right;
+    font-size: 10px;
+    height: 2px;
+    background-color: black;
+    color: white;
+  }
+
+  .topTable td:first-child {
+    font-weight: bold;
+  }
+  .topTable td,th {
+    border: 2px solid black;
+    text-align: center;
+    padding: 8px;
+  }
+  .topTable {
+    font-size: 18px;
+    border: 5px solid black;
+    border-collapse: collapse;
+		font-family: Arial, Helvetica, sans-serif;
+  }
+
+
+
+  /* .hoverNote:hover {background-color:"Orange";} */
+
+</style>
