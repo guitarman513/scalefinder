@@ -126,7 +126,7 @@ def contact():
   mastheadText = ["Contact Me",'My email is joe@joemulhern.net']
   return render_template('html/contact.html.jinja', mastheadImage='post-bg.jpg', debug=debug,mastText = mastheadText)
 
-
+@app.route('/sitemap.txt')
 @app.route('/ads.txt')
 def static_from_root():
     return send_from_directory(app.static_folder, request.path[1:])
